@@ -7,6 +7,4 @@
 
     <item name="maplibre_enableStaleState" type="bool">true</item>
     <item name="maplibre_staleStateTimeout" type="integer">0.25</item>
-
-    <string name="maplibre_attributionsDialogTitle">Powerful GPS Navigation &amp; Maps for Android</string>
 </resources>

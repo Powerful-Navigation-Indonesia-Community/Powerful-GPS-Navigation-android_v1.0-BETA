@@ -23,6 +23,7 @@ import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.findViewTreeOnBackPressedDispatcherOwner
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -50,11 +51,13 @@ import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions
 import com.mapbox.mapboxsdk.location.LocationComponentOptions
 import com.mapbox.mapboxsdk.location.engine.LocationEngineRequest
 import com.mapbox.mapboxsdk.location.modes.CameraMode
+import com.mapbox.mapboxsdk.location.modes.RenderMode
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.services.android.navigation.ui.v5.NavigationLauncher
 import com.mapbox.services.android.navigation.ui.v5.NavigationLauncherOptions
+import com.mapbox.services.android.navigation.ui.v5.NavigationView
 import com.mapbox.services.android.navigation.ui.v5.route.NavigationRoute
 import com.mapbox.services.android.navigation.v5.models.DirectionsCriteria
 import com.mapbox.services.android.navigation.v5.models.DirectionsRoute
@@ -156,19 +159,12 @@ class MapActivity : AppCompatActivity(), LocationListener {
     private var vehicleType = DirectionsCriteria.PROFILE_DRIVING_TRAFFIC
 
     @SuppressLint("MissingPermission", "CutPasteId", "UseCompatLoadingForDrawables", "SetTextI18n",
-        "InflateParams"
+        "InflateParams", "NewApi"
     )
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         onBackPressedDispatcher.addCallback(this,onBackPressedCallbackToExitApp)
-
-        val key = "C975JZ2tW8Fxe2xPdPzz"
-
-        // Find other maps in https://cloud.maptiler.com/maps/
-        val mapId = "streets-v2"
-
-        val styleUrl = "asset://maps/style/syaiful_amini_user_mapstyle_source_sygic-map-style-day.json"
 
         // Init MapLibre
         Mapbox.getInstance(this)
@@ -245,7 +241,7 @@ class MapActivity : AppCompatActivity(), LocationListener {
             maplibreMap = map
             navigationMapRoute = NavigationMapRoute(mapView, map)
 
-            maplibreMap.setStyle(styleUrl) { style: Style ->
+            maplibreMap.setStyle(getString(R.string.map_style_light)) { style: Style ->
 
                 locationComponent = maplibreMap.locationComponent
                 val locationComponentOptions =
@@ -257,12 +253,12 @@ class MapActivity : AppCompatActivity(), LocationListener {
                 locationComponent!!.activateLocationComponent(locationComponentActivationOptions)
                 locationComponent!!.isLocationComponentEnabled = true
                 locationComponent!!.cameraMode = CameraMode.TRACKING
+                locationComponent!!.renderMode = RenderMode.COMPASS
                 locationComponent!!.forceLocationUpdate(lastLocation)
+                locationComponent!!.setMaxAnimationFps(70)
 
                 menuDashboard.setOnClickListener {
-                    onBackPressedDispatcher.addCallback(this,onBackPressedCallbackToCloseDrawer)
 
-                    drawerLayout.openDrawer(GravityCompat.START, true)
                 }
 
                 locateButton.setOnClickListener {
